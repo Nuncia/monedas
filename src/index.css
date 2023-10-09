@@ -1,0 +1,16 @@
+:root{
+  background-color: black;
+}
+body{
+  background-color: black;
+}
+.cardStyle{
+  width: 18rem;
+  margin-left: 10px;
+  margin-top: 40px;
+  background-color: rgba(57, 54, 54, 0.178);
+  border: 1px solid rgb(53, 47, 47);
+  color: white;
+  text-align: center;
+
+}
