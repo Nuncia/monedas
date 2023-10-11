@@ -5,13 +5,22 @@
 body{
   /* background-color: black; */
 }
+/* .container{ */
+  /* display: flex;
+  flex-wrap: wrap;
+} */
 .cardStyle{
   width: 18rem;
   margin-left: 10px;
   margin-top: 40px;
-  background-color: rgba(57, 54, 54, 0.178);
-  border: 1px solid rgb(53, 47, 47);
+  background-color: rgba(53, 47, 47, 0.377);
+  border: 1px solid rgba(194,159,21,1);
   /* color: white; */
   text-align: center;
-
+  color: #fff;
+  position: relative;
+  box-shadow: 25px 20px 24px -7px rgba(160, 158, 46, 0.95);
+  /* -webkit-box-shadow: 10px 10px 5px 0px rgba(194,159,21,1);
+-moz-box-shadow: 10px 10px 5px 0px rgba(194,159,21,1); */
+/* box-shadow: 0 0 0 2em #f4aab9 */
 }

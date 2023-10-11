@@ -1,6 +1,43 @@
+body{
+    /* display: flex; */
+   background-color: black;
+}
 footer{
     text-align: center;
+    color: #fff;
 }
 header{
     text-align: center;
+    color: #ffffff;
+}
+.contenedor{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    text-align: center;
+    flex-direction: column;
+    /* background-image: url(./assets/indicador2.jpg);
+    height: 100%;
+    opacity: 0.7;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    z-index: 1; */
+    /* background-color: rgba(255, 255, 255, 0.802); */
+}
+main{
+    /* background-image: url(./assets/indicador2.jpg);
+    height: 100vh;
+    opacity: 0.3;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    background-color: rgba(255, 255, 255, 0.7); */
+}
+.appComponente{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
 }

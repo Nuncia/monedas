@@ -1,10 +1,10 @@
 const Card = ({item}) => {
   return (
-        <div className="card  cardStyle shadow-sm p-3 mb-5" >
-            <h2>{item.codigo}</h2>
-            <p className="">{item.nombre}</p>
+        <div className="card  cardStyle shadow-sm p-3 mb-5" style={{width: '18rem'}}>
+            <h2>{item.valor}</h2>
+            <p >{item.nombre}</p>
             <div>
-              <p>{item.valor}</p>
+              {/* <p>{item.identificador}</p> */}
             </div>
         </div>
   );

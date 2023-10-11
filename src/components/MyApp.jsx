@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Card from './Card';
 
-function MyApp() {
+function MyApp({busqueda}) {
   // Inicializamos el estado 'info' como un objeto vacío
   const [info, setInfo] = useState({});
 
@@ -18,8 +18,7 @@ function MyApp() {
       const temporal = await response.json();//toma el texto y dice interpretalo como json
     
       //   console.log('Datos recibidos:', temporal); // Log para verificar los datos recibidos
-      setInfo(temporal); // Establecemos el estado 'info' con los datos recibidos
-      const arreglo = [];
+    //   setInfo(temporal); // Establecemos el estado 'info' con los datos recibidos
       const atributos =Object.keys(temporal)
       const lista = [];
       for(let i = 0; i < atributos.length; i ++){
@@ -28,40 +27,58 @@ function MyApp() {
         lista.push(valorAtributo);
       }
       const listaMonedas = [];
+      
       for(let moneda in lista){
-        if(lista[moneda].codigo && lista[moneda].nombre && lista[moneda].valor) {
+        if(lista[moneda].codigo && lista[moneda].fecha && lista[moneda].nombre && lista[moneda].valor) {
+            
             listaMonedas.push(
                 {
                     identificador: lista[moneda].codigo,
+                    fecha: (lista[moneda]).fecha,
                     nombre: lista[moneda].nombre,
-                    valor: lista[moneda].valor
+                    valor: parseInt(lista[moneda].valor)
                 }
             )
         }
       }
-      console.log(listaMonedas);
       setInfo(listaMonedas)
-    
+      ordenarMonedas();
     
     } catch(e) {
         alert(e);
     }
   }
 
+  const ordenarMonedas = () => {
+    const MonedasOrdenadas = info.sort((a,b) => a.nombre - b.nombre);
+    console.log(MonedasOrdenadas)
+  };
+
   // Utilizamos useEffect para hacer log del estado 'info' cada vez que cambia
   useEffect(() => {
-    console.log('Estado actual de info:', info);
+    // console.log('Estado actual de info:', info);
   }, [info]);
+  // console.log(info)
+  let resultados = [];
+  if(!busqueda){
+    resultados = info;
+  } else{
+    resultados = info.filter((item) => {
+      return item.nombre.toLowerCase().include(busqueda.toLowerCase());
+    });
+  }
+  console.log('resultados: ',resultados);
 
   // Renderizamos el componente
   return (
     <>
-      {/* Verificamos si 'info' tiene elementos antes de intentar renderizarlos */}
+      {/* Verificamos si 'info' tiene elementos antes de cargarlos */}
       {info.length > 0 ? (
         // Mapeamos a través de 'info' y devolvemos JSX para cada objeto
-        info.map((item, index) => (
-          
-           <Card key={index} item={item}/>
+        resultados.map((item, index) => (
+           <div  key={index} >
+              <Card key={index} item={item}/>
+           </div>
          
         ))
       ) : (
