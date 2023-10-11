@@ -1,10 +1,10 @@
 const Card = ({item}) => {
   return (
         <div className="card  cardStyle shadow-sm p-3 mb-5" >
-            <p>{item.date}</p>
-            <p className="">{item.title}</p>
+            <h2>{item.codigo}</h2>
+            <p className="">{item.nombre}</p>
             <div>
-              <p>{item.extra}</p>
+              <p>{item.valor}</p>
             </div>
         </div>
   );

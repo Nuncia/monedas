@@ -6,7 +6,15 @@ function App() {
 
   return (
     <>
-      <MyApp/>  
+      <header>
+        <h2>Indicadores economicos</h2>
+      </header>
+      <main>
+        <MyApp/>
+      </main>
+      <footer className='footer'>
+        Este es el footer
+      </footer>
     </>
   )
 }
