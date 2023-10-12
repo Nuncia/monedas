@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Card from './Card';
+import Grafico from './Grafico';
 
 function MyApp({busqueda}) {
   // Inicializamos el estado 'info' como un objeto vacío
@@ -8,6 +9,7 @@ function MyApp({busqueda}) {
   // Utilizamos useEffect para llamar a consultarInformacion cuando el componente se monta
   useEffect(() => {
     consultarInformacion();
+    cargarDatosGrafico();
   }, []);
 
   // Definimos la función asincrónica para realizar la llamada a la API
@@ -17,8 +19,6 @@ function MyApp({busqueda}) {
       const response = await fetch(endPoint);
       const temporal = await response.json();//toma el texto y dice interpretalo como json
     
-      //   console.log('Datos recibidos:', temporal); // Log para verificar los datos recibidos
-    //   setInfo(temporal); // Establecemos el estado 'info' con los datos recibidos
       const atributos =Object.keys(temporal)
       const lista = [];
       for(let i = 0; i < atributos.length; i ++){
@@ -41,33 +41,34 @@ function MyApp({busqueda}) {
             )
         }
       }
-      setInfo(listaMonedas)
-      ordenarMonedas();
-    
+      ordenarMonedas(listaMonedas);    
     } catch(e) {
         alert(e);
     }
+  };
+
+  const cargarDatosGrafico = () => {
+
   }
 
-  const ordenarMonedas = () => {
-    const MonedasOrdenadas = info.sort((a,b) => a.nombre - b.nombre);
-    console.log(MonedasOrdenadas)
+ //Ordenando los datos obtenidos
+  const ordenarMonedas = (listaMonedas) => {
+    const MonedasOrdenadas = listaMonedas.sort((a,b) => a.valor - b.valor);
+    console.log(info)
+    setInfo(MonedasOrdenadas);
   };
 
   // Utilizamos useEffect para hacer log del estado 'info' cada vez que cambia
   useEffect(() => {
     // console.log('Estado actual de info:', info);
   }, [info]);
-  // console.log(info)
+  
   let resultados = [];
   if(!busqueda){
     resultados = info;
   } else{
-    resultados = info.filter((item) => {
-      return item.nombre.toLowerCase().include(busqueda.toLowerCase());
-    });
+    resultados = info.filter((item) => item.nombre.toLowerCase().includes(busqueda.toLowerCase()));
   }
-  console.log('resultados: ',resultados);
 
   // Renderizamos el componente
   return (
@@ -78,6 +79,7 @@ function MyApp({busqueda}) {
         resultados.map((item, index) => (
            <div  key={index} >
               <Card key={index} item={item}/>
+              <Grafico/>
            </div>
          
         ))
