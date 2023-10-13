@@ -5,7 +5,6 @@ import { useState } from 'react';
 import Buscador from './components/Buscador';
 
 function App() {
-  const [monedas, setMonedas] = useState([]);
   const [busqueda, setBusqueda] = useState('')  
 
   return (
@@ -24,17 +23,6 @@ function App() {
               <li className="nav-item">
                 <a className="nav-link active" aria-current="page" href="#">Graficos</a>
               </li>
-              {/* <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Dropdown
-                </a>
-                <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li><a className="dropdown-item" href="#">Action</a></li>
-                  <li><a className="dropdown-item" href="#">Another action</a></li>
-                  <li className="dropdown-divider"></li>
-                  <li><a className="dropdown-item" href="#">Something else here</a></li>
-                </ul>
-              </li> */}
             </ul>
             <Buscador busqueda={busqueda} setBusqueda={setBusqueda}/>
           </div>
@@ -46,7 +34,7 @@ function App() {
         </div>
       </section>
       <footer className='footer'>
-        <h3>Este es el footer!!!!!!</h3>
+        <p>Este es el footer!!!!!!</p>
       </footer>
     </div>
   )
