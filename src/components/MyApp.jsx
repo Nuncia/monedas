@@ -7,9 +7,10 @@ function MyApp({busqueda}) {
 
   // Inicializamos el estado 'info' como un objeto vacío
   const [info, setInfo] = useState([]);
-  const [endPoints, setEndPoints] = useState([]);
+  const [historico, setHistorico] = useState([])
 
-  const data = {};
+  const arregloHistorico = [];
+  let data = [];
 
   // Utilizamos useEffect para llamar a consultarInformacion cuando el componente se monta
   useEffect(() => {
@@ -46,67 +47,38 @@ function MyApp({busqueda}) {
                     valor: (lista[moneda].valor)
                 }
             )
-
         }
       }
       setInfo(listaMonedas);
       obtenerEndPoints();
       ordenarMonedas(listaMonedas);
-      console.log('listaMonedas:', listaMonedas)
     } catch(e) {
         alert(e);
     }
   };
 
   const obtenerEndPoints = () => {
-    const arregloEndPoints = [];
     let url = '';
-    info.forEach((item) => {
+      info.forEach((item) => {
       url = `https://mindicador.cl/api/${item.identificador}`;
-      obtenerDatosGraficos(url)
-    })
-    setEndPoints(arregloEndPoints);      
+      obtenerHistorico(url);
+    });   
   };
 
-  const obtenerDatosGraficos = async (url) => {
-   try{
-//Obteniedo los datos de fecha y valor para cada moneda
+  const obtenerHistorico = async (url) => {
+    try{
       const res = await fetch(url);
-      const data = await res.json();
-      const ultimosDias = data?.serie.reverse().splice(-10);
-//Tengo los datos de la moneda
-      setEndPoints(ultimosDias);
-      prepararConfiguracion();
-    } catch(e){
-      alert(e);
+      const datos = await res.json();
+      arregloHistorico.push({
+        id: datos.codigo,
+        serie: datos.serie
+      })
+
+    }catch(e){
+      console.error(e.message);
     }
-  };
-
-  const prepararConfiguracion = () => {
-    let fechasMoneda = [];
-    let valoresMoneda = [];
-
-    endPoints.forEach((moneda) => {
-      fechasMoneda.push(moneda.fecha);
-      valoresMoneda.push(moneda.valor);
-    })
-    let  data = {
-      // type: 'line',
-      data: {
-        labels: fechasMoneda,
-        datasets: [
-          {
-            fill: true,
-            label: 'NOMBRE MONEDA',
-            data: valoresMoneda,
-            backgroundColor: 'red',
-            borderWidth: 1,
-          }
-        ]
-      }
-    };
-    setEndPoints(data);
-    console.log(endPoints)
+    // console.log(arregloHistorico);
+    setHistorico(arregloHistorico);
   };
 
  //Ordenando los datos obtenidos
@@ -117,8 +89,8 @@ function MyApp({busqueda}) {
 
   // Utilizamos useEffect para hacer log del estado 'info' cada vez que cambia
   useEffect(() => {
-    // console.log('Estado actual de info:', info);
-  }, [info]);
+    console.log('Estado actual de historico:', historico);
+  }, [historico]);
   
   let resultados = [];
   if(!busqueda){
@@ -136,9 +108,6 @@ function MyApp({busqueda}) {
         resultados.map((item, index) => (
            <div  key={index} >
               <Card key={index} item={item}/>
-              <div>
-                {endPoints.legth > 0 ? (<Line data={info.datasets}/>) : null}
-              </div>
            </div>
          
         ))
