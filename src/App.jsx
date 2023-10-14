@@ -12,7 +12,7 @@ function App() {
       <header>
         <h2 style={{textAlign: 'center'}}>Indicadores economicos</h2>
       </header>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark" style={{width: '-webkit-fill-available'}}>
         <div className="container-fluid">
           <a className="navbar-brand" href="#">Home</a>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
