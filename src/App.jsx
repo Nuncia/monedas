@@ -10,7 +10,7 @@ function App() {
   return (
     <div className='contenedor'>
       <header>
-        <h2 style={{textAlign: 'center'}}>Indicadores economicos</h2>
+        <h2 style={{textAlign: 'center'}}>Indicadores económicos</h2>
       </header>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark" style={{width: '-webkit-fill-available'}}>
         <div className="container-fluid">
@@ -34,7 +34,7 @@ function App() {
         </div>
       </section>
       <footer className='footer'>
-        <p>Este es el footer!!!!!!</p>
+         <p>Todos los derechos reservados. Mónica Ayala</p>    
       </footer>
     </div>
   )

@@ -1,183 +1,128 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import Card from './Card';
-import {Chart as ChartJS} from 'chart.js/auto'
-import { Bar, Line } from 'react-chartjs-2';
-// import Grafico from './Grafico';
-import { Chart, BarElement, Tooltip,Legend, CategoryScale, LinearScale } from 'chart.js';
 import Grafico from './Grafico';
 
-ChartJS.register(
-    BarElement,
-    Tooltip,
-    Legend,
-    CategoryScale,
-    LinearScale
-);
-
 function MyApp({busqueda}) {
+  
+  const [cargando, setCargando] = useState(true);  // Estado para mostrar el indicador de carga
+  const [resultados, setResultados] = useState([]);
+  const [arregloHistorico, setArregloHistorico] = useState([]);//Estado para almacenar los datos del hastorico
 
-  // Inicializamos el estado 'info' como un objeto vacío
-  const [info, setInfo] = useState([]);
-  // const [historico, setHistorico] = useState([]);
-  const [data, setData] = useState({});
-  const arregloHistorico = [];
-
-  // Utilizamos useEffect para llamar a consultarInformacion cuando el componente se monta
-  useEffect(() => {
-    consultarInformacion();
-    // preparandoConfiguracion();
-  }, []);
-
-  // Definimos la función asincrónica para realizar la llamada a la API
-  const consultarInformacion = async () => {
+  // Se define método para consultar la API
+  const consultarInformacion = useCallback(async () => {
+    setCargando(true);  
     let fecha = '';
-
     try {
       const endPoint = 'https://mindicador.cl/api';
       const response = await fetch(endPoint);
-      const temporal = await response.json();//toma el texto y dice interpretalo como json
-    
-      const atributos =Object.keys(temporal)
+      const temporal = await response.json();
+      const atributos = Object.keys(temporal);
       const lista = [];
-      for(let i = 0; i < atributos.length; i ++){
-        const nombreAtributo = atributos[i]; //Obtenemos los nomres de lsoa tributos
+      for(let i = 0; i < atributos.length; i++){
+        const nombreAtributo = atributos[i];
         const valorAtributo = temporal[nombreAtributo];
         lista.push(valorAtributo);
       }
       const listaMonedas = [];
-      
+      // Aquí se almacena información sobre las monedas
       for(let moneda in lista){
         fecha = new Date(lista[moneda].fecha);
         if(lista[moneda].codigo && lista[moneda].fecha && lista[moneda].nombre && lista[moneda].valor) {
-            const opciones = {year: 'numeric', month: 'numeric', day: 'numeric'};
-            listaMonedas.push(
-                {
-                    identificador: lista[moneda].codigo,
-                    fecha: fecha.toLocaleDateString(undefined,opciones),
-                    nombre: lista[moneda].nombre,
-                    valor: (lista[moneda].valor)
-                }
-            )
+          const opciones = {year: 'numeric', month: 'numeric', day: 'numeric'};
+          listaMonedas.push({
+            identificador: lista[moneda].codigo,
+            fecha: fecha.toLocaleDateString(undefined, opciones),
+            nombre: lista[moneda].nombre,
+            valor: (lista[moneda].valor)
+          });
         }
       }
-      setInfo(listaMonedas);
-      obtenerEndPoints();
-      ordenarMonedas(listaMonedas);
+      //Se obtienen las monedas ordenadas por valor
+      const monedasOrdenadas = listaMonedas.sort((a,b) => a.valor - b.valor)
+      //Se obtiene los endPoints para obtener el historial de las monedas
+      obtenerEndPoints(monedasOrdenadas);
     } catch(e) {
-        alert(e);
+      alert(e);
     }
+    setCargando(false);
+  }, []);
+
+  // Define un método para obtener los endPoints del historial de las monedas
+  const obtenerEndPoints = async (listaMonedas) => {
+    // Utiliza Promise.all para realizar solicitudes simultáneas para cada moneda y espera a que todas se completen
+    const arregloHistoricoTemporal = await Promise.all(
+        listaMonedas.map(async (item) => {
+            const url = `https://mindicador.cl/api/${item.identificador}`;
+            const respuesta = await llamarHistorico(url);
+            if (respuesta && respuesta.serie.length > 0) {
+                const datos = respuesta.serie.slice(0, 10).reverse();
+                return {
+                    identificador: item.identificador,
+                    fecha: item.fecha,
+                    valor: item.valor,
+                    nombre: respuesta.nombre,
+                    id: respuesta.codigo,
+                    serie: datos
+                };
+            }
+            return null;
+        })
+    );
+    const filteredArray = arregloHistoricoTemporal.filter(item => item !== null);
+    setArregloHistorico(filteredArray);
   };
 
-  const obtenerEndPoints = () => {
-    let url = '';
-      info.forEach((item) => {
-        url = `https://mindicador.cl/api/${item.identificador}`;
-      // obtenerHistorico(url);
-      preparandoConfiguracion();
-    });   
-  };
-
-  const obtenerHistorico = async (url) => {
+  // Define un método para llamar al historial de la API
+  const llamarHistorico = async (url) => {
     try{
       const res = await fetch(url);
       const datos = await res.json();
-      arregloHistorico.push({
-        id: datos.codigo,
-        serie: datos.serie
-      })
-
-      const mondOrdenadas = arregloHistorico?.sort((a,b) => a.valor - b.valor)
-      let historicoIndividual = []
-      let fechas = [];
-      let valores = [];
-      let nombre = '';
-      let hm = [];
-      const opciones = {year: 'numeric', month: 'numeric', day: 'numeric'};
-  //Para cada moneda se obtienen los ultimos 10 datos de fechas y valores
-      for(let i = 0; i < mondOrdenadas.length ; i ++){
-        nombre = mondOrdenadas[i].id;
-        historicoIndividual = mondOrdenadas[i].serie.slice(0,10)
-        hm = historicoIndividual[i].fecha;
-        console.log(historicoIndividual[i].fecha)
-        fechas.push(historicoIndividual[i].fecha)
-        
-        let datos = {
-          type: 'bar',
-          data: {
-            labels: fechas,
-            datasets: [
-              {
-                label: nombre,
-                data: valores,
-                borderWidth: 2,
-              }
-            ]
-          }
-        }
-        // console.log(datos)
-        setData(datos);
-      }
-
+      return datos;
     }catch(e){
-      console.log(e.message);
-    }    
+      alert(e.message);    
+    }
   };
 
-  const preparandoConfiguracion = () => {
-    let datos = {
-      type: 'bar',
-      labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo"],
-      datasets: [
-        {
-          label: "Historico Monedas",
-          backgroundColor: "rgba(75, 192, 192, 0.2)",
-          borderColor: "rgba(75, 192, 192, 1)",
-          borderWidth: 1,
-          data: [65, 59, 80, 81, 56],
-        },
-      ],
-    };
-    setData(datos);
-
-  };
-
- //Ordenando los datos obtenidos
-  const ordenarMonedas = (listaMonedas) => {
-    console.log(listaMonedas)
-    const MonedasOrdenadas = listaMonedas.sort((a,b) => a.valor - b.valor);
-    setInfo(MonedasOrdenadas);
-  };
-
-  // Utilizamos useEffect para hacer log del estado 'info' cada vez que cambia
   useEffect(() => {
-    // console.log('Estado actual de data:', data);
-  }, [data]);
-  
-  let resultados = [];
-  if(!busqueda){
-    resultados = info;
-  } else{
-    resultados = info.filter((item) => item.nombre.toLowerCase().includes(busqueda.toLowerCase()));
-  }
+    consultarInformacion();
+  }, [consultarInformacion]);
 
-  // Renderizamos el componente
+  useEffect(() => {
+    let nuevosResultados = [];
+    if(!busqueda){
+      nuevosResultados = arregloHistorico;
+    } else{
+      nuevosResultados = arregloHistorico.filter((item) => 
+        item.nombre.toLowerCase().includes(busqueda.toLowerCase())
+      );
+    }
+    setResultados(nuevosResultados);
+  }, [busqueda, arregloHistorico]);
+
+  // Renderiza el componente
   return (
     <>
-      {/* Verificamos si 'info' tiene elementos antes de cargarlos */}
-      {info.length > 0 ? (
-        // Mapeamos a través de 'info' y devolvemos JSX para cada objeto
-        resultados.map((item, index) => (
-           <div  key={index} >
-              <Card key={index} item={item}/>
-              <Bar data={data}/>
-           </div>
-         
-        ))
+      {cargando ? (
+        "Cargando..."
       ) : (
-        "Loading..."
+        resultados.length > 0 ? (
+          resultados.map((item, index) => (
+            <div key={index} >
+              <Card key={index} item={item}/> 
+              <Grafico data={item.serie} />            
+            </div>         
+          ))
+        ) : (
+          "No se encontraron resultados."
+        )
       )}
     </>
-  )
+  );
 }
+
+MyApp.propTypes = {
+  busqueda: PropTypes.string.isRequired
+};
 
 export default MyApp;

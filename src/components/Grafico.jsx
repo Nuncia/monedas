@@ -1,35 +1,63 @@
-import { Chart as ChartJS, BarElement, Tooltip,Legend, CategoryScale, LinearScale } from 'chart.js';
-import {Bar, Line} from 'react-chartjs-2'
+import { Chart as ChartJS, LineElement, PointElement, LineController, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
+import { Line } from 'react-chartjs-2';
 
+// Registro de componentes para el gráfico
 ChartJS.register(
-    BarElement,
-    Tooltip,
-    Legend,
+    LineElement,
+    PointElement,
+    LineController,
     CategoryScale,
-    LinearScale
+    LinearScale,
+    Tooltip,
+    Legend
 );
 
-const Grafico = () => {
-    let data = {
-        type: 'line',
-        labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo"],
+import PropTypes from 'prop-types';
+
+const Grafico = ({ data }) => {
+    // Aquí se extraen las fechas y los valores de la serie de datos de cada moneda
+    const labels = data.map((item) => new Date(item.fecha).toLocaleDateString());
+    const values = data.map((item) => item.valor);
+
+    // Creamos un objeto de datos para pasarlos al gráfico
+    const graficoDatos = {
+        labels: labels,
         datasets: [
-          {
-            label: "Historico Monedas",
-            backgroundColor: "rgba(75, 192, 192, 0.2)",
-            borderColor: "rgba(75, 192, 192, 1)",
-            borderWidth: 1,
-            data: [65, 59, 80, 81, 56],
-          },
-        ],
-      };
+            {
+                label: "Valor",
+                data: values,
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 2,
+                fill: false,
+            }
+        ]
+    };
 
-      return (
+    // Configurando opciones para el gráfico
+    const options = {
+        scales: {
+            y: {
+                type: 'linear',
+                position: 'left',
+                beginAtZero: false,
+            },
+        },
+        plugins: {
+          legend: {
+              display: false
+          }
+      }
+    };
+
+    return (
         <div>
-          {/* <h2>Gráfico de Ventas Mensuales</h2> */}
-          <Bar data={data} />
+            <Line data={graficoDatos} options={options} />
         </div>
-      );
-}
+    );
+};
 
-export default Grafico
+Grafico.propTypes = {
+    data: PropTypes.array.isRequired,
+};
+
+export default Grafico;
